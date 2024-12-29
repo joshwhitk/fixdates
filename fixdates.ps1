@@ -1,12 +1,15 @@
-# this is a Windows Powershell script (fixdates.ps1) written by josh whitkin 
-#
-# this script solves the problem: when you download photos from google photos via takeout or folder download, their 'date modified' is not set in EXIF metadata, so programs like Divinci Resolve can see them.
-#
-Write-Output "use Exiftool to set dates in images and video files from filenames like 'IMG_20240202_whatever.mp4' so you can see Feb 2 2024 in 'Date Modified' in Davinci Resolve ..."
-
 param(
     [string]$TargetFolder
 )
+
+# this is a Windows Powershell script (fixdates.ps1) written by josh whitkin 
+#
+Write-Output ""
+Write-Output "This script solves the problem: when you download photos from google photos via takeout or folder download, their 'date modified' is not set in EXIF metadata, so programs like Divinci Resolve can see them."
+Write-Output ""
+Write-Output "it works by using Exiftool to set dates in images and video files from filenames like 'IMG_20240202_whatever.mp4' so you can see Feb 2 2024 in 'Date Modified' in Davinci Resolve."
+Write-Output ""
+Write-Output "It can run very slowly if you have a lot of files so be patient..."
 
 if (-not $TargetFolder) {
     Write-Output "Error: Please provide a child folder as an argument."
@@ -22,6 +25,7 @@ if (-not (Test-Path $exifToolPath)) {
     Write-Output "Please download ExifTool from https://exiftool.org/ and place it in the specified location. Rename the exe to exiftool.exe as per its instructions."
     exit
 }
+Write-Output "I found exiftool the target folder okay."
 
 # Get today's year
 $today = Get-Date
@@ -39,6 +43,8 @@ $supportedExtensions = @(".jpg", ".jpeg", ".png", ".mp4", ".mov", ".avi", ".mkv"
 Get-ChildItem -Path $TargetFolder -File -Recurse | Where-Object { $supportedExtensions -contains $_.Extension.ToLower() } | ForEach-Object {
     $file = $_
     $filename = $file.BaseName
+
+    Write-Output "working on $filename..."
 
     # Default datetime placeholder for files without an 8-digit date
     $datetime = "Unknown"
